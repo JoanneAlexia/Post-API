@@ -1,5 +1,6 @@
 package post.api.project.suburb;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -20,8 +21,13 @@ public class SuburbService {
         return newSuburb;
     }
 
-    public List<SuburbNameAndStateOnly> getByPostcode(short postcode){
-        return this.repository.findByPostcode(postcode);
+    public List<String> getByPostcode(short postcode){
+        List<SuburbNameAndStateOnly> maybeSuburb = this.repository.findByPostcode(postcode);
+        List<String> flattenedMaybeSuburb = new ArrayList<>();
+        for(SuburbNameAndStateOnly suburb: maybeSuburb){
+            flattenedMaybeSuburb.add(suburb.getSuburbNameAndState());
+        }
+        return flattenedMaybeSuburb;
     }
 
     public List<Suburb> getBySuburbName(String suburbName){

@@ -39,6 +39,9 @@ public class SuburbController {
     public ResponseEntity<List<String>> getByPostcode(@PathVariable short postcode){
         try{
             List<String> maybeSuburb = this.service.getByPostcode(postcode);
+            if(maybeSuburb.isEmpty()){
+                return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+            }
             return new ResponseEntity<>(maybeSuburb,HttpStatus.OK);
         }catch(Exception e){
             logger.error(e.getMessage());
