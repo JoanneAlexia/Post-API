@@ -6,21 +6,26 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity
+@Entity(name = "Suburb")
 public class Suburb {
+
     @Id 
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column 
-    String suburbName; 
+    private String suburbName; 
 
     @Column
-    String suburbState; 
+    private String suburbState; 
 
     @Column
-    short postcode;
+    private short postcode;
 
+    public Suburb(){
+
+    }
+    
     public Suburb(String suburbName, String suburbState, short postcode){
         this.suburbName = suburbName;
         this.suburbState = suburbState;
@@ -57,5 +62,11 @@ public class Suburb {
 
     public void setPostcode(short postcode) {
         this.postcode = postcode;
+    }
+
+    @Override
+    public String toString() {
+        return "Suburb [id=" + id + ", suburbName=" + suburbName + ", suburbState=" + suburbState + ", postcode="
+                + postcode + "]";
     }
 }

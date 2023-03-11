@@ -1,5 +1,7 @@
 package post.api.project.suburb;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -7,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +31,28 @@ public class SuburbController {
             return new ResponseEntity<>(createdSuburb,HttpStatus.CREATED);
         }catch(Exception e){
             logger.error("There was an error when attempting to create new suburb entry");
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+        @GetMapping("/postcode/{postcode}")
+    public ResponseEntity<List<SuburbNameAndStateOnly>> getByPostcode(@PathVariable short postcode){
+        try{
+            List<SuburbNameAndStateOnly> maybeSuburb = this.service.getByPostcode(postcode);
+            return new ResponseEntity<>(maybeSuburb,HttpStatus.OK);
+        }catch(Exception e){
+            logger.error(e.getMessage());
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/suburbName/{suburbName}")
+    public ResponseEntity<List<Suburb>> getBySuburbName(@PathVariable String suburbName){
+        try{
+            List<Suburb> maybeSuburb = this.service.getBySuburbName(suburbName);
+            return new ResponseEntity<>(maybeSuburb,HttpStatus.OK);
+        }catch(Exception e){
+            logger.error(e.getMessage());
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
