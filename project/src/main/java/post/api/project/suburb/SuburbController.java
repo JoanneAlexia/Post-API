@@ -35,10 +35,10 @@ public class SuburbController {
         }
     }
 
-        @GetMapping("/postcode/{postcode}")
-    public ResponseEntity<List<SuburbNameAndStateOnly>> getByPostcode(@PathVariable short postcode){
+    @GetMapping("/postcode/{postcode}")
+    public ResponseEntity<List<String>> getByPostcode(@PathVariable short postcode){
         try{
-            List<SuburbNameAndStateOnly> maybeSuburb = this.service.getByPostcode(postcode);
+            List<String> maybeSuburb = this.service.getByPostcode(postcode);
             return new ResponseEntity<>(maybeSuburb,HttpStatus.OK);
         }catch(Exception e){
             logger.error(e.getMessage());
