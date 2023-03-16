@@ -44,10 +44,36 @@ Run the REST API in using your prefered IDE. The Spring boot dashboad extension 
 
 ## Design Goals / Approach
 
-## Features
+The table schema for suburb contains four rows:
 
-## Known issues
+- ID
+- Suburb name
+- Suburb state
+- postcode
 
-## Change logs
+### An API that allows mobile clients to retrieve the suburb information by postcode.
 
-## What did you struggle with?
+At endpoint "/suburb/postcode/:postcode" there is a GET method that will retrieve suburb and state information based on postcode. To accomplish this I needed to add a derieved query method to the SuburbRepository interface called findByPostcode which accepted a postcode as an argument.
+A list is returned from this method because there are cases where more than one suburb has the same postcode.
+To limit the results of the query so that only suburb name and state data would be retrieved, I used interface based projections. I created an interface SuburbNameAndStateOnly that contained a method which returned a string containing suburbName and suburbState in the format "suburbName, suburbState" for example "Stanmore, NSW". The findByPostcode method returned a list of type SuburbNameStateOnly.
+If the postcode is not found in the database a Http status of 404 will be returned.
+
+### An API that allows mobile clients to retrieve a postcode given a suburb name
+
+At endpoint "/suburb/suburbName/:suburbName" there is a GET method that will retrieve postcode information based on suburb name alone.
+At endpoint "/suburb/suburbName/:suburbName/suburbState/suburbState" there is a GET method that will retrieve apostcode information based on suburb name and state information.
+To accomplish this I needed to add two more derieved query method to the SuburbRepository interface called findBySuburbName and findBySuburbNameAndState which accepts a suburb name or suburb name and state information respectively.
+A list is returned from both methods because there are cases where a suburb can have more than one postcode. For example, Epping, NSW has a 1710 (post office boxes) and 2121 (delivery area) poscode.
+To limit the results of the query I again used interface based projections. I created an interface PostcodeOnly that contained a method which returned the value for postcode.
+If the data entered is not found in the database a Http status of 404 will be returned.
+
+### A secured API to add new suburb and postcode combinations (you'll have to work out how this should work)
+
+At the endpoint "/suburb", I added a POST method for creating new entries.
+I created a SuburbCreateDTO which contains the content of the request body for the post request. It includes a suburb name, state and postcode.
+Annotions were used for input validation to ensure that none of the values were blank or null and that state value contains 3 letters and the postcode contains 4 digits.
+Before a new database entry is created, a search is performed for duplicate enteries. If a duplicate entry is found an error will be returned.
+
+## Testing
+
+Unit tests were written for the custom methods added to the repoisitory layer, all methods in the service layer and controller layer.

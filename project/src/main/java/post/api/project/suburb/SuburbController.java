@@ -1,6 +1,7 @@
 package post.api.project.suburb;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -27,8 +28,13 @@ public class SuburbController {
     @PostMapping
     public ResponseEntity<Suburb> create(@Valid @RequestBody SuburbCreateDTO data){
         try{
-            Suburb createdSuburb = this.service.create(data);
-            return new ResponseEntity<>(createdSuburb,HttpStatus.CREATED);
+            Optional<Suburb> createdSuburb = this.service.create(data);
+            if(createdSuburb.isPresent()){
+                return new ResponseEntity<>(createdSuburb.get(),HttpStatus.CREATED);
+            }else{
+                return new ResponseEntity<>(null,HttpStatus.CONFLICT);
+            }
+            
         }catch(Exception e){
             logger.error("There was an error when attempting to create new suburb entry");
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -50,9 +56,26 @@ public class SuburbController {
     }
 
     @GetMapping("/suburbName/{suburbName}")
-    public ResponseEntity<List<Suburb>> getBySuburbName(@PathVariable String suburbName){
+    public ResponseEntity<List<Short>> getBySuburbName(@PathVariable String suburbName){
         try{
-            List<Suburb> maybeSuburb = this.service.getBySuburbName(suburbName);
+            List<Short> maybeSuburb = this.service.getBySuburbName(suburbName);
+            if(maybeSuburb.isEmpty()){
+                return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(maybeSuburb,HttpStatus.OK);
+        }catch(Exception e){
+            logger.error(e.getMessage());
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/suburbName/{suburbName}/suburbState/{suburbState}")
+    public ResponseEntity<List<Short>> getBySuburbNameAndState(@PathVariable String suburbName, @PathVariable String suburbState){
+        try{
+            List<Short> maybeSuburb = this.service.getBySuburbNameAndState(suburbName,suburbState);
+            if(maybeSuburb.isEmpty()){
+                return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+            }
             return new ResponseEntity<>(maybeSuburb,HttpStatus.OK);
         }catch(Exception e){
             logger.error(e.getMessage());
